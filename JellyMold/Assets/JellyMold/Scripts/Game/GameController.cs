@@ -156,7 +156,7 @@ namespace JellyMold.Game
 
         private void Undo()
         {
-            if (session == null || !session.CanUndo || !gate.TryAcquire()) return;
+            if (session == null || !session.CanUndo || session.Status == GameStatus.Won || !gate.TryAcquire()) return;
             hand.Hide();
             MoveResult last = undoResults.Count > 0 ? undoResults.Pop() : null;
             session.Undo();
@@ -221,12 +221,14 @@ namespace JellyMold.Game
             board.PlayWin();
             ui.SetTutorial("");
             yield return new WaitForSeconds(Timing.WinDelay + 0.4f);
+            if (session.Status != GameStatus.Won) yield break;
             ui.ShowWin(GameConfig.StarsFor(used, level.Par), used, levelIndex + 1 < levels.Count);
         }
 
         private IEnumerator LoseRoutine()
         {
             yield return new WaitForSeconds(0.35f);
+            if (session.Status != GameStatus.Lost) yield break;
             audioManager.Play(SoundId.Lose);
             ui.ShowLose(session.Current.FilledCount, session.Layout.MoldCount, session.CanUndo);
         }

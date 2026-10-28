@@ -148,6 +148,12 @@ namespace JellyMold.Game.UI
         private void Release()
         {
             if (anim != null) StopCoroutine(anim);
+            anim = null;
+            if (!isActiveAndEnabled)
+            {
+                transform.localScale = Vector3.one;
+                return;
+            }
             anim = StartCoroutine(Wobble());
         }
 

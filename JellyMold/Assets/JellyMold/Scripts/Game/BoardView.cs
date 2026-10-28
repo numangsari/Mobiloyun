@@ -174,11 +174,12 @@ namespace JellyMold.Game
             return new Vector3(layout.X(cell) - (layout.Width - 1) * 0.5f, (layout.Height - 1) * 0.5f - layout.Y(cell), 0f);
         }
 
-        public Vector3 CellToWorld(int cell) => content.TransformPoint(CellToLocal(cell));
+        /// <summary>World position of a cell at rest (ignores the transient intro scale of the content).</summary>
+        public Vector3 CellToWorld(int cell) => transform.TransformPoint(CellToLocal(cell));
 
         public bool WorldToCell(Vector3 world, out int x, out int y)
         {
-            Vector3 local = content.InverseTransformPoint(world);
+            Vector3 local = transform.InverseTransformPoint(world);
             float fx = local.x + (layout.Width - 1) * 0.5f;
             float fy = (layout.Height - 1) * 0.5f - local.y;
             x = Mathf.RoundToInt(fx);

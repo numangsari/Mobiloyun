@@ -9,8 +9,8 @@ namespace JellyMold.Game
     public sealed class CameraRig : MonoBehaviour
     {
         /// <summary>Share of the safe-area height reserved for the top HUD and bottom buttons.</summary>
-        public const float TopReserve = 0.15f;
-        public const float BottomReserve = 0.19f;
+        public const float TopReserve = 0.14f;
+        public const float BottomReserve = 0.22f;
 
         private Camera cam;
         private SpriteRenderer background;
@@ -30,6 +30,7 @@ namespace JellyMold.Game
                 camGo.tag = "MainCamera";
                 cam = camGo.AddComponent<Camera>();
             }
+            if (FindFirstObjectByType<AudioListener>() == null) cam.gameObject.AddComponent<AudioListener>();
             cam.orthographic = true;
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = SpriteFactory.ToColor(Procedural.ArtPalette.BackgroundBottom);
