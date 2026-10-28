@@ -34,6 +34,7 @@ Kişisel veri, cihaz kimliği, konum ya da davranış kaydı tutulmaz. Veri ciha
 | `com.unity.ugui` 2.0.0 | Arayüz (Canvas, Image, Text, Button) | Hayır |
 | `com.unity.test-framework` 1.4.5 | Editör testleri (yalnızca Editor'da) | Hayır |
 | `com.unity.modules.audio` | Ses çalma | Hayır |
+| `com.unity.modules.imageconversion` | PlayMode testlerinde ekran görüntüsünü PNG'ye çevirmek | Hayır |
 | `com.unity.modules.imgui` | Editör/arayüz bağımlılığı | Hayır |
 | `com.unity.modules.jsonserialize` | Yerleşik modül | Hayır |
 | `com.unity.modules.ui`, `com.unity.modules.uielements` | uGUI ve test runner bağımlılıkları | Hayır |

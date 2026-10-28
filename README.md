@@ -28,7 +28,35 @@ Renkli jöleleri satır ya da sütun presleyerek aynı renkteki kalıplara yerle
 
 ### Unity içinde
 
-`Window → General → Test Runner → EditMode → Run All`. Testler `Assets/JellyMold/Tests/EditMode` altında. Kurallar, undo/restart, kazanma/kaybetme, çözümleyici, kayıt formatı ve 20 seviyenin doğrulanması burada test edilir.
+`Window → General → Test Runner`:
+
+- **EditMode** (`Assets/JellyMold/Tests/EditMode`) şunları test eder: kurallar, undo/restart, kazanma/kaybetme, çözümleyici, kayıt formatı, oyun akışı (20 seviyenin çözümle sırayla oynanması, kilit açma, en iyi skor, ipuçları), ekran sığdırma hesabı ve 20 seviyenin doğrulanması.
+- **PlayMode** (`Assets/JellyMold/Tests/PlayMode`) oyunun kendisini çalıştırır.
+  - `Smoke` kategorisi, kaydırma girdisinden kayda kadar uçtan uca akışı dener: 1. seviyeyi çözüp kazanma panelini ve kaydı kontrol eder; animasyon sırasında gelen ikinci presin yok sayıldığını, undo sonrasında görünüm ile mantıksal durumun eşleştiğini, kaybetme panelini ve undo ile devam edilebildiğini doğrular; 20 seviyenin her birinin yüklenip kameraya sığdığını kontrol eder.
+  - `Capture` kategorisi ekran görüntülerini, `Perf` kategorisi performans raporunu üretir.
+
+### Kendi bilgisayarında tek komutla (macOS / Windows)
+
+Unity Hub ile Unity 6 kurulu olmalı. Betik, Unity'yi varsayılan Hub klasöründe kendisi bulur; bulamazsa `UNITY_PATH` ile yolunu verebilirsin.
+
+```bash
+scripts/unity.sh all            # macOS (ya da setup | test-edit | test-play | screenshots | perf | apk)
+```
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\unity.ps1 all     # Windows
+```
+
+`all` sırasıyla şunları yapar:
+1. Proje ayarlarını uygular ve sahneyi oluşturur.
+2. EditMode testlerini çalıştırır.
+3. PlayMode duman testlerini çalıştırır.
+4. 1080×1920 ve 1080×2400 çözünürlükte ekran görüntülerini alır.
+5. Performans raporunu (`perf.json`) üretir.
+6. Android APK'sını oluşturur.
+
+Sonuçlar ve loglar `JellyMold/Builds/` klasörüne yazılır (git'e eklenmez).
+
+**Claude Code ile:** Depoyu klonla, `claude/dazzling-fermi-utir4i` dalına geç, depo klasöründe `claude` komutunu çalıştır ve "Unity planına devam et" de. Claude betikleri çalıştırır, hataları düzeltir ve ekran görüntülerini inceler.
 
 ### Unity olmadan (.NET 8 SDK)
 
@@ -42,6 +70,7 @@ dotnet run --project tools/LevelTool -c Release -- solve JellyMold/Assets/JellyM
 dotnet build tools/UnityCompileCheck                             # Unity scriptlerinin derleme kontrolü (referans DLL'lerle)
 dotnet run --project tools/ArtPreview -c Release -- out JellyMold/Assets/JellyMold/Resources/Levels/level_10.json
                                                                  # sprite'ları PNG, sesleri WAV olarak dışa aktarır
+dotnet run --project tools/ArtPreview -c Release -- --bench     # görsel/ses üretim süresi ve bellek
 ```
 
 ## Android test APK'sı
@@ -103,13 +132,16 @@ Bu demo, Unity kurulu olmayan bir bulut ortamında geliştirildi. Bu nedenle:
 
 | Kontrol | Durum |
 |---|---|
-| Çekirdek mantık testleri (`dotnet test`) | ✅ Çalıştırıldı, geçiyor |
+| Çekirdek mantık ve oyun akışı testleri (`dotnet test`, 74 test) | ✅ Çalıştırıldı, geçiyor |
 | 20 seviyenin çözülebilirliği, `par` ve hamle sınırları | ✅ Çözümleyiciyle doğrulandı |
-| Unity scriptlerinin derlenmesi | ⚠️ Yalnızca topluluk referans DLL'lerine (Unity 2021.x API) karşı derlendi. Unity 6 editöründe derleme yapılmadı. |
+| 20 seviyenin çözümle sırayla oynanması, kilit açma ve ipuçları | ✅ `GameFlowTests` ile doğrulandı |
+| Ekranın tahtaya sığdırılması (6 farklı telefon ve tablet ekranı, çentikli ekran dahil) | ✅ `BoardFitTests` ile hesap düzeyinde doğrulandı |
+| Unity scriptlerinin ve testlerinin derlenmesi | ⚠️ Yalnızca topluluk referans DLL'lerine (Unity 2021.x API) karşı derlendi. Unity 6 editöründe derleme yapılmadı. |
 | Prosedürel görseller | ✅ PNG'ye aktarılıp gözle kontrol edildi |
-| Editörde oynanış, animasyon zamanlaması, UI yerleşimi | ❌ Test edilmedi (Unity yok) |
-| Farklı çözünürlükler ve güvenli alan | ❌ Cihazda ya da editörde test edilmedi. Kod `Screen.safeArea` ve `CanvasScaler` kullanıyor. |
-| 60 FPS, bellek ölçümü, APK, cihazda test | ❌ Yapılmadı |
+| Görsel ve ses üretim maliyeti, doku belleği | ✅ Masaüstü .NET'te ölçüldü ([docs/PERFORMANCE.md](docs/PERFORMANCE.md)) |
+| PlayMode testleri, ekran görüntüleri, Unity performans raporu, APK | ⏳ Hazır ama henüz çalıştırılmadı (`scripts/unity.*`) |
+| `scripts/unity.ps1` | ⏳ PowerShell bu ortamda yok; betik çalıştırılmadı |
+| Cihazda dokunmatik ve FPS testi | ❌ Yapılmadı |
 
 İlk açılışta Unity 6'ya özgü bir derleme uyarısı veya hatası çıkarsa büyük olasılıkla küçük bir API farkıdır; Console'daki mesajla birlikte bildir.
 

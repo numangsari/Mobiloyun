@@ -189,6 +189,8 @@ namespace JellyMold.Game
 
         public JellyView JellyAt(int cell) => cell >= 0 && cell < jellies.Length ? jellies[cell] : null;
 
+        public MoldView MoldAt(int cell) => cell >= 0 && cell < molds.Length ? molds[cell] : null;
+
         // ------------------------------------------------------------------ line highlight
 
         public void ShowLine(Direction dir, int line)

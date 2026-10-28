@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.IO.Compression;
 using JellyMold.Core;
 using JellyMold.Procedural;
@@ -15,6 +18,7 @@ namespace JellyMold.ArtPreview
     {
         public static int Main(string[] args)
         {
+            if (args.Length > 0 && args[0] == "--bench") return Bench();
             string outDir = args.Length > 0 ? args[0] : "art-preview";
             Directory.CreateDirectory(outDir);
 
@@ -41,6 +45,71 @@ namespace JellyMold.ArtPreview
             foreach (SoundId id in Enum.GetValues(typeof(SoundId)))
                 Wav.Write(Path.Combine(outDir, "sfx_" + id + ".wav"), SoundSynth.Generate(id, 22050), 22050);
             Console.WriteLine("written to " + Path.GetFullPath(outDir));
+            return 0;
+        }
+
+        /// <summary>
+        /// Times generating every sprite the game creates at runtime (same set as SpriteFactory.WarmUp)
+        /// and every sound, and reports their memory footprint. Desktop .NET numbers: relative only.
+        /// </summary>
+        private static int Bench()
+        {
+            var sprites = new List<Func<PixelImage>>();
+            foreach (JellyColor c in new[] { JellyColor.Coral, JellyColor.Turquoise, JellyColor.Yellow })
+            {
+                sprites.Add(() => ArtLibrary.Jelly(c));
+                sprites.Add(() => ArtLibrary.MoldSocket(c));
+                sprites.Add(() => ArtLibrary.MoldFilled(c));
+            }
+            sprites.Add(() => ArtLibrary.Floor());
+            sprites.Add(() => ArtLibrary.Wall());
+            sprites.Add(() => ArtLibrary.BoardPanel(6, 6));
+            sprites.Add(() => ArtLibrary.Strip(6, 1));
+            sprites.Add(() => ArtLibrary.Strip(1, 6));
+            sprites.Add(() => ArtLibrary.Background());
+            sprites.Add(() => ArtLibrary.SoftCircle());
+            sprites.Add(() => ArtLibrary.Sparkle());
+            sprites.Add(() => ArtLibrary.Ring());
+            sprites.Add(() => ArtLibrary.Hand());
+            sprites.Add(() => ArtLibrary.UiRoundRect(128, 44, false));
+            sprites.Add(() => ArtLibrary.UiRoundRect(128, 44, true));
+            sprites.Add(() => ArtLibrary.UiShadow());
+            sprites.Add(() => ArtLibrary.UiCircle(128, false));
+            sprites.Add(() => ArtLibrary.UiCircle(128, true));
+            foreach (IconKind k in Enum.GetValues(typeof(IconKind))) sprites.Add(() => ArtLibrary.Icon(k));
+
+            long pixels = 0;
+            var artTimes = new List<double>();
+            var audioTimes = new List<double>();
+            long samples = 0;
+            for (int run = 0; run < 6; run++)
+            {
+                var sw = Stopwatch.StartNew();
+                pixels = 0;
+                foreach (Func<PixelImage> make in sprites)
+                {
+                    PixelImage img = make().BleedEdges();
+                    img.ToRgba32();
+                    pixels += (long)img.Width * img.Height;
+                }
+                artTimes.Add(sw.Elapsed.TotalMilliseconds);
+                sw.Restart();
+                samples = 0;
+                foreach (SoundId id in Enum.GetValues(typeof(SoundId))) samples += SoundSynth.Generate(id, 22050).Length;
+                audioTimes.Add(sw.Elapsed.TotalMilliseconds);
+            }
+            artTimes.RemoveAt(0); // JIT warm-up
+            audioTimes.RemoveAt(0);
+
+            Console.WriteLine("| Measure | Value |");
+            Console.WriteLine("|---|---|");
+            Console.WriteLine("| Sprites | " + sprites.Count + " |");
+            Console.WriteLine("| Sprite pixels | " + pixels.ToString("N0") + " |");
+            Console.WriteLine("| Texture memory (RGBA32, no mipmaps) | " + (pixels * 4 / 1048576.0).ToString("0.00") + " MB |");
+            Console.WriteLine("| Sprite generation (min / avg of 5) | " + artTimes.Min().ToString("0") + " / " + artTimes.Average().ToString("0") + " ms |");
+            Console.WriteLine("| Sound effects | " + Enum.GetValues(typeof(SoundId)).Length + " clips, " + (samples / 22050.0).ToString("0.00") + " s, " + (samples * 4 / 1024.0).ToString("0") + " KB as float |");
+            Console.WriteLine("| Sound generation (min / avg of 5) | " + audioTimes.Min().ToString("0.0") + " / " + audioTimes.Average().ToString("0.0") + " ms |");
+            Console.WriteLine("| Machine | " + Environment.ProcessorCount + " cores, " + System.Runtime.InteropServices.RuntimeInformation.OSDescription + ", .NET " + Environment.Version + " |");
             return 0;
         }
 

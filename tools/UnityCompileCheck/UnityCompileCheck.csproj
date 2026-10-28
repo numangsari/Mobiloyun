@@ -20,9 +20,12 @@
 
   <ItemGroup>
     <Compile Include="../../JellyMold/Assets/JellyMold/Scripts/**/*.cs" Link="Scripts/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="../../JellyMold/Assets/JellyMold/Tests/**/*.cs" Link="Tests/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="TestFrameworkStubs.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" GeneratePathProperty="true" ExcludeAssets="all" />
     <PackageReference Include="Unity3D.UnityEngine.UI" Version="2020.3.21" GeneratePathProperty="true" ExcludeAssets="all" />
     <PackageReference Include="Unity3D.SDK" Version="2021.1.14.1" GeneratePathProperty="true" ExcludeAssets="all" />

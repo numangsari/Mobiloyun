@@ -36,6 +36,49 @@ namespace JellyMold.Game
         public static Sprite UiCircleButton() => GetUi("ui_circle_btn", () => ArtLibrary.UiCircle(128, true), 0);
         public static Sprite Icon(IconKind k) => GetUi("icon_" + k, () => ArtLibrary.Icon(k), 0);
 
+        /// <summary>Number of generated sprites and their total texture size in bytes (RGBA32, no mipmaps).</summary>
+        public static int SpriteCount => Cache.Count;
+
+        public static long TextureBytes
+        {
+            get
+            {
+                long total = 0;
+                foreach (Sprite s in Cache.Values)
+                {
+                    if (s != null) total += (long)s.texture.width * s.texture.height * 4;
+                }
+                return total;
+            }
+        }
+
+        /// <summary>Generates every board sprite up front (used by the performance report).</summary>
+        public static void WarmUp(int boardWidth, int boardHeight)
+        {
+            foreach (JellyColor c in new[] { JellyColor.Coral, JellyColor.Turquoise, JellyColor.Yellow })
+            {
+                Jelly(c);
+                MoldSocket(c);
+                MoldFilled(c);
+            }
+            Floor();
+            Wall();
+            BoardPanel(boardWidth, boardHeight);
+            Strip(boardWidth, 1);
+            Strip(1, boardHeight);
+            Background();
+            SoftCircle();
+            Sparkle();
+            Ring();
+            Hand();
+            UiRoundRect();
+            UiButton();
+            UiShadow();
+            UiCircle();
+            UiCircleButton();
+            foreach (IconKind k in (IconKind[])Enum.GetValues(typeof(IconKind))) Icon(k);
+        }
+
         private static Sprite Get(string key, Func<PixelImage> make, Vector2? pivot = null)
         {
             if (Cache.TryGetValue(key, out Sprite s) && s != null) return s;

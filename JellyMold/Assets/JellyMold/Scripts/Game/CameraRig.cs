@@ -1,3 +1,4 @@
+using JellyMold.Core;
 using UnityEngine;
 
 namespace JellyMold.Game
@@ -8,10 +9,6 @@ namespace JellyMold.Game
     /// </summary>
     public sealed class CameraRig : MonoBehaviour
     {
-        /// <summary>Share of the safe-area height reserved for the top HUD and bottom buttons.</summary>
-        public const float TopReserve = 0.14f;
-        public const float BottomReserve = 0.22f;
-
         private Camera cam;
         private SpriteRenderer background;
         private BoardView board;
@@ -52,41 +49,35 @@ namespace JellyMold.Game
 
         private void LateUpdate()
         {
-            var screen = new Vector2(Screen.width, Screen.height);
-            if (screen != lastScreen || Screen.safeArea != lastSafe || board.Size != lastBoardSize) Refit();
+            var screen = new Vector2(cam.pixelWidth, cam.pixelHeight);
+            if (screen != lastScreen || SafeRect() != lastSafe || board.Size != lastBoardSize) Refit();
+        }
+
+        /// <summary>Safe area of the current render target in pixels (full target when rendering offscreen).</summary>
+        private Rect SafeRect()
+        {
+            if (cam.targetTexture != null || Screen.width != cam.pixelWidth || Screen.height != cam.pixelHeight)
+                return new Rect(0, 0, cam.pixelWidth, cam.pixelHeight);
+            return Screen.safeArea;
         }
 
         public void Refit()
         {
-            lastScreen = new Vector2(Screen.width, Screen.height);
-            lastSafe = Screen.safeArea;
+            lastScreen = new Vector2(cam.pixelWidth, cam.pixelHeight);
+            lastSafe = SafeRect();
             lastBoardSize = board.Size;
-            if (Screen.width <= 0 || Screen.height <= 0) return;
-
-            float aspect = (float)Screen.width / Screen.height;
-            Rect safe = Screen.safeArea;
-            float safeBottom = safe.yMin / Screen.height, safeTop = safe.yMax / Screen.height;
-            float safeWidth = safe.width / Screen.width;
-
-            // Fractions of the full screen height available for the board.
-            float playBottom = safeBottom + (safeTop - safeBottom) * BottomReserve;
-            float playTop = safeTop - (safeTop - safeBottom) * TopReserve;
-            float playHeight = Mathf.Max(0.1f, playTop - playBottom);
+            if (cam.pixelWidth <= 0 || cam.pixelHeight <= 0) return;
 
             Vector2 size = board.Size;
-            float sizeForHeight = size.y / (2f * playHeight);
-            float sizeForWidth = (size.x + 0.3f) / (2f * aspect * safeWidth);
-            cam.orthographicSize = Mathf.Max(sizeForHeight, sizeForWidth);
-
-            // Shift the camera so the board sits in the middle of the play band.
-            float fullHeight = cam.orthographicSize * 2f;
-            float bandCenter = (playBottom + playTop) * 0.5f;
+            BoardFit.Result fit = BoardFit.Compute(cam.pixelWidth, cam.pixelHeight, lastSafe.xMin, lastSafe.yMin, lastSafe.xMax, lastSafe.yMax, size.x, size.y);
+            cam.orthographicSize = fit.OrthographicSize;
             Vector3 b = board.transform.position;
-            cam.transform.position = new Vector3(b.x, b.y + (0.5f - bandCenter) * fullHeight, -10f);
+            cam.transform.position = new Vector3(b.x, b.y + fit.CameraOffsetY, -10f);
 
             // Cover the whole view with the background sprite.
+            float fullHeight = fit.OrthographicSize * 2f;
+            float viewW = fullHeight * cam.pixelWidth / cam.pixelHeight;
             Vector2 spriteSize = background.sprite.bounds.size;
-            float viewW = fullHeight * aspect;
             float scale = Mathf.Max(viewW / spriteSize.x, fullHeight / spriteSize.y) * 1.02f;
             background.transform.position = new Vector3(cam.transform.position.x, cam.transform.position.y, 5f);
             background.transform.localScale = new Vector3(scale, scale, 1f);
@@ -100,6 +91,6 @@ namespace JellyMold.Game
         }
 
         /// <summary>Pixels per world unit, used to scale swipe thresholds to cell size.</summary>
-        public float PixelsPerUnit => Screen.height / (cam.orthographicSize * 2f);
+        public float PixelsPerUnit => cam.pixelHeight / (cam.orthographicSize * 2f);
     }
 }

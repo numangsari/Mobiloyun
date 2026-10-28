@@ -56,6 +56,8 @@ namespace JellyMold.EditorTools
             EditorUserBuildSettings.buildAppBundle = false;
             BuildReport report = BuildPipeline.BuildPlayer(options);
             Debug.Log("[Jelly Mold] Android build: " + report.summary.result + ", " + report.summary.totalSize / (1024 * 1024) + " MB, errors: " + report.summary.totalErrors);
+            // In batch mode (scripts/unity.*) a failed build must fail the process.
+            if (Application.isBatchMode && report.summary.result != BuildResult.Succeeded) EditorApplication.Exit(1);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace JellyMold.Tests
         }
 
         /// <summary>Unity runs tests from the project root; the .NET runner copies levels next to the test binary.</summary>
-        private static string FindLevelDirectory()
+        internal static string FindLevelDirectory()
         {
             string[] candidates =
             {
@@ -32,10 +32,15 @@ namespace JellyMold.Tests
             throw new DirectoryNotFoundException("Level directory not found.");
         }
 
+        internal static List<LevelData> LoadLevels()
+        {
+            return LevelFiles().Select(f => LevelData.FromJson(File.ReadAllText(f))).ToList();
+        }
+
         [Test]
         public void LevelIdsAreSequential()
         {
-            List<LevelData> levels = LevelFiles().Select(f => LevelData.FromJson(File.ReadAllText(f))).ToList();
+            List<LevelData> levels = LoadLevels();
             Assert.AreEqual(ExpectedLevelCount, levels.Count);
             for (int i = 0; i < levels.Count; i++) Assert.AreEqual(i + 1, levels[i].Id, "file order and ids must match");
         }
