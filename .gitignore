@@ -1,0 +1,29 @@
+# Unity
+JellyMold/[Ll]ibrary/
+JellyMold/[Tt]emp/
+JellyMold/[Oo]bj/
+JellyMold/[Bb]uild/
+JellyMold/[Bb]uilds/
+JellyMold/[Ll]ogs/
+JellyMold/[Uu]ser[Ss]ettings/
+JellyMold/[Mm]emoryCaptures/
+JellyMold/*.csproj
+JellyMold/*.sln
+JellyMold/*.slnx
+JellyMold/*.user
+JellyMold/.vs/
+JellyMold/.idea/
+JellyMold/.vscode/
+*.apk
+*.aab
+*.unitypackage
+crashlytics-build.properties
+
+# .NET tools
+tools/**/bin/
+tools/**/obj/
+tools/**/TestResults/
+
+# OS
+.DS_Store
+Thumbs.db

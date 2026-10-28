@@ -1,0 +1,18 @@
+{
+    "name": "JellyMold.Game",
+    "rootNamespace": "JellyMold.Game",
+    "references": [
+        "JellyMold.Core",
+        "JellyMold.Procedural",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

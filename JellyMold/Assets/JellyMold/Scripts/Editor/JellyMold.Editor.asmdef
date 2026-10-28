@@ -1,0 +1,20 @@
+{
+    "name": "JellyMold.Editor",
+    "rootNamespace": "JellyMold.EditorTools",
+    "references": [
+        "JellyMold.Core",
+        "JellyMold.Procedural",
+        "JellyMold.Game"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

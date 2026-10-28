@@ -1,0 +1,16 @@
+{
+  "id": 2,
+  "name": "İkili Dolum",
+  "moves": 5,
+  "par": 2,
+  "tutorial": "Bir pres, aynı satırdaki tüm jöleleri iter.",
+  "hint": true,
+  "grid": [
+    "......",
+    "......",
+    "......",
+    "r.Rr.R",
+    "......",
+    "......"
+  ]
+}

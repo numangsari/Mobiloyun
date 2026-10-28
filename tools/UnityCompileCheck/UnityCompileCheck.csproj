@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Compile-only sanity check of the Unity scripts outside the Unity Editor.
+    References community-published Unity reference assemblies from nuget.org (2021.x API surface),
+    which is close to, but not identical with, Unity 6. A clean build here catches typos and type
+    errors; the authoritative check is still opening the project in Unity.
+    These assemblies are only used for this local check and are never shipped with the game.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <OutputType>Library</OutputType>
+    <DefineConstants>$(DefineConstants);ENABLE_LEGACY_INPUT_MANAGER;UNITY_EDITOR;UNITY_INCLUDE_TESTS</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);CS0618;NU1701</NoWarn>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../JellyMold/Assets/JellyMold/Scripts/**/*.cs" Link="Scripts/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" GeneratePathProperty="true" ExcludeAssets="all" />
+    <PackageReference Include="Unity3D.UnityEngine.UI" Version="2020.3.21" GeneratePathProperty="true" ExcludeAssets="all" />
+    <PackageReference Include="Unity3D.SDK" Version="2021.1.14.1" GeneratePathProperty="true" ExcludeAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(PkgUnityEngine_Modules)/lib/netstandard2.0/*.dll" Private="false" />
+    <Reference Include="$(PkgUnity3D_UnityEngine_UI)/lib/UnityEngine.UI.dll" Private="false" />
+    <Reference Include="$(PkgUnity3D_SDK)/lib/UnityEditor.dll" Private="false" />
+  </ItemGroup>
+</Project>
