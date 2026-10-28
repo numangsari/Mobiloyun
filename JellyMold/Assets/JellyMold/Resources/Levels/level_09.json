@@ -1,0 +1,16 @@
+{
+  "id": 9,
+  "name": "Turkuaz Yolu",
+  "moves": 6,
+  "par": 4,
+  "tutorial": "",
+  "hint": false,
+  "grid": [
+    "......",
+    "T.....",
+    "Ttt.Rr",
+    "#....#",
+    "......",
+    "...Rr."
+  ]
+}

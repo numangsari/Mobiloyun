@@ -1,0 +1,16 @@
+{
+  "id": 4,
+  "name": "Duvar Dibi",
+  "moves": 7,
+  "par": 4,
+  "tutorial": "Duvarlar jöleyi durdurur. Bunu kullan!",
+  "hint": false,
+  "grid": [
+    "......",
+    "......",
+    "#...r#",
+    ".R..Rr",
+    "#....#",
+    "......"
+  ]
+}

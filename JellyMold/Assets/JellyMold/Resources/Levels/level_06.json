@@ -1,0 +1,16 @@
+{
+  "id": 6,
+  "name": "İki Renk",
+  "moves": 6,
+  "par": 4,
+  "tutorial": "Her jöle yalnızca kendi renginde kalıba girer.",
+  "hint": false,
+  "grid": [
+    "......",
+    "....t.",
+    "......",
+    "......",
+    ".RrT..",
+    ".#..#."
+  ]
+}

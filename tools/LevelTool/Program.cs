@@ -169,6 +169,7 @@ namespace JellyMold.LevelTool
             int tries = Int(o, "tries", 3000);
             int keep = Int(o, "keep", 5);
             int seed = Int(o, "seed", 1);
+            bool symmetric = Int(o, "sym", 0) == 1;   // mirror walls left/right for a designed look
 
             var rng = new Random(seed);
             var found = new List<(double score, LevelMetrics m, string[] grid)>();
@@ -179,7 +180,20 @@ namespace JellyMold.LevelTool
                 char[] cells = Enumerable.Repeat('.', size * size).ToArray();
                 var free = Enumerable.Range(0, cells.Length).OrderBy(_ => rng.Next()).ToList();
                 int take = 0;
-                for (int w = 0; w < walls; w++) cells[free[take++]] = '#';
+                if (symmetric)
+                {
+                    for (int w = 0; w < walls / 2; w++)
+                    {
+                        int c = free.First(i => cells[i] == '.' && cells[MirrorX(i, size)] == '.' && MirrorX(i, size) != i);
+                        cells[c] = '#';
+                        cells[MirrorX(c, size)] = '#';
+                    }
+                    free = free.Where(i => cells[i] == '.').ToList();
+                }
+                else
+                {
+                    for (int w = 0; w < walls; w++) cells[free[take++]] = '#';
+                }
                 string moldChars = "RTY", jellyChars = "rty";
                 for (int c = 0; c < colors; c++)
                 {
@@ -216,6 +230,8 @@ namespace JellyMold.LevelTool
             Console.WriteLine("// " + found.Count + " candidates");
             return 0;
         }
+
+        private static int MirrorX(int i, int size) => (i / size) * size + (size - 1 - i % size);
 
         private static Dictionary<string, string> ParseOptions(string[] args, int start, out List<string> positional)
         {

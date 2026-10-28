@@ -1,0 +1,16 @@
+{
+  "id": 13,
+  "name": "Sıra Önemli",
+  "moves": 8,
+  "par": 7,
+  "tutorial": "Dolu kalıp da yolu kapatır. Önce hangisi?",
+  "hint": false,
+  "grid": [
+    "#...R#",
+    "..##..",
+    "t.tT..",
+    "#...r#",
+    "T..Rr.",
+    "......"
+  ]
+}

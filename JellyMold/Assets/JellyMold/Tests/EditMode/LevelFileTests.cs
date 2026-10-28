@@ -10,7 +10,7 @@ namespace JellyMold.Tests
     /// <summary>Every shipped level must parse, be solvable, and carry a par/move budget matching the solver.</summary>
     public class LevelFileTests
     {
-        public const int ExpectedLevelCount = 3;
+        public const int ExpectedLevelCount = 20;
 
         private static IEnumerable<string> LevelFiles()
         {

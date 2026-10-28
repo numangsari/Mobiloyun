@@ -1,0 +1,16 @@
+{
+  "id": 16,
+  "name": "Sarı Yıldız",
+  "moves": 7,
+  "par": 6,
+  "tutorial": "Yeni renk: sarı!",
+  "hint": false,
+  "grid": [
+    "#..T.#",
+    "......",
+    "Y.....",
+    "..t...",
+    "..yR..",
+    ".#.r#."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": 12,
+  "name": "Merdiven",
+  "moves": 8,
+  "par": 7,
+  "tutorial": "",
+  "hint": false,
+  "grid": [
+    "...tr.",
+    "...Rr.",
+    "..T...",
+    "#Tt..#",
+    ".#R.#.",
+    ".#..#."
+  ]
+}

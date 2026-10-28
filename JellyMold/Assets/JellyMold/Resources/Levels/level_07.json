@@ -1,0 +1,16 @@
+{
+  "id": 7,
+  "name": "Yanlış Kapı",
+  "moves": 6,
+  "par": 4,
+  "tutorial": "Başka renkte kalıp, yolu kapatır.",
+  "hint": false,
+  "grid": [
+    "......",
+    ".#..#.",
+    "...r..",
+    "R.Tt..",
+    "......",
+    "......"
+  ]
+}

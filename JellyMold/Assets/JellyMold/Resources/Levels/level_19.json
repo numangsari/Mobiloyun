@@ -1,0 +1,16 @@
+{
+  "id": 19,
+  "name": "Kalabalık",
+  "moves": 8,
+  "par": 7,
+  "tutorial": "Fazladan jöleler yolu tıkayabilir.",
+  "hint": false,
+  "grid": [
+    "...r..",
+    "..R.Y.",
+    "##..##",
+    "...y..",
+    "...rt.",
+    "..T..."
+  ]
+}

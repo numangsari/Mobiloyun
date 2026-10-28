@@ -1,0 +1,16 @@
+{
+  "id": 11,
+  "name": "Üçlü Zincir",
+  "moves": 8,
+  "par": 7,
+  "tutorial": "Doğru sırayla tek preste üç kalıp!",
+  "hint": false,
+  "grid": [
+    ".####.",
+    ".r....",
+    "......",
+    ".#.T#.",
+    "tTtRrR",
+    "......"
+  ]
+}

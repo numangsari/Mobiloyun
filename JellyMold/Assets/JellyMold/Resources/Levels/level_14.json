@@ -1,0 +1,16 @@
+{
+  "id": 14,
+  "name": "Labirent",
+  "moves": 8,
+  "par": 7,
+  "tutorial": "",
+  "hint": false,
+  "grid": [
+    "..r...",
+    "#...R#",
+    "#..r.#",
+    ".tT.R.",
+    ".t##..",
+    "...T.."
+  ]
+}
