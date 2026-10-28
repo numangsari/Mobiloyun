@@ -76,7 +76,7 @@ function Invoke-Task([string]$Name) {
         "test-edit"   { return Invoke-Tests "test-edit" "EditMode" "" @("-nographics") }
         "test-play"   { return Invoke-Tests "test-play" "PlayMode" "Smoke" }
         "screenshots" { $ok = Invoke-Tests "screenshots" "PlayMode" "Capture"; Write-Host "    images: $Out\Screenshots"; return $ok }
-        "perf"        { $ok = Invoke-Tests "perf" "PlayMode" "Perf"; if (Test-Path "$Out\perf.json") { Get-Content "$Out\perf.json" }; return $ok }
+        "perf"        { $ok = Invoke-Tests "perf" "PlayMode" "Perf"; if ($ok -and (Test-Path "$Out\perf.json")) { Get-Content "$Out\perf.json" | Out-Host }; return $ok }
         "apk"         {
             $ok = Invoke-Unity "apk" @("-quit", "-buildTarget", "Android", "-executeMethod", "JellyMold.EditorTools.LevelTools.BuildAndroid")
             Get-ChildItem "$Out\Android\*.apk" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host ("    {0} ({1:N1} MB)" -f $_.FullName, ($_.Length / 1MB)) }

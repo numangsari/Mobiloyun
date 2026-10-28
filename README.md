@@ -22,7 +22,7 @@ Renkli jöleleri satır ya da sütun presleyerek aynı renkteki kalıplara yerle
 4. `Assets/JellyMold/Scenes/Main.unity` sahnesini aç ve **Play**'e bas. Sahne neredeyse boş; oyunun tamamı `App` bileşeni tarafından koddan kurulur. Herhangi bir boş sahnede Play'e basmak da oyunu başlatır.
 5. Game penceresinde 9:16 bir çözünürlük seç, örneğin 1080×1920. Mouse ile sürükleyerek oynayabilirsin.
 
-Üretilen `.meta` dosyalarını ve `ProjectSettings/` klasörünü ilk açılıştan sonra commit etmen önerilir.
+İlk açılışta üretilen `.meta` dosyaları, ana sahne ve proje ayarları depoya eklenmiştir; diğer bilgisayarda da aynı dosyalar kullanılmalıdır.
 
 ## Testler
 
@@ -62,7 +62,7 @@ Windows çalıştırma dosyasını Unity kurmadan denetlemek için:
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\tests\Test-UnityRunner.ps1
 ```
 
-Bu denetim, örnek bir çalıştırıcıyla 12 durumu sınar. Unity hata verdiğinde, sonuç dosyası eksik veya bozuk olduğunda, eski sonuç kaldığında, hiç kontrol çalışmadığında veya kontroller atlandığında başarı bildirilmediğini doğrular. Dosya yollarındaki boşluklar da sınanır. Üretilen geçici dosyalar `JellyMold/Builds/RunnerTests/` altında tutulur.
+Bu denetim, örnek bir çalıştırıcıyla 14 durumu sınar. Unity hata verdiğinde, sonuç dosyası eksik veya bozuk olduğunda, eski sonuç kaldığında, hiç kontrol çalışmadığında veya kontroller atlandığında başarı bildirilmediğini doğrular. Hız raporunun hata sonucunu örtmemesi ve dosya yollarındaki boşluklar da sınanır. Üretilen geçici dosyalar `JellyMold/Builds/RunnerTests/` altında tutulur.
 
 **Claude Code ile:** Depoyu klonla, `claude/dazzling-fermi-utir4i` dalına geç, depo klasöründe `claude` komutunu çalıştır ve "Unity planına devam et" de. Claude betikleri çalıştırır, hataları düzeltir ve ekran görüntülerini inceler.
 
@@ -144,13 +144,16 @@ Tasarım ilkeleri:
 | 20 seviyenin çözülebilirliği, `par` ve hamle sınırları | ✅ Çözümleyiciyle doğrulandı |
 | 20 seviyenin çözümle sırayla oynanması, kilit açma ve ipuçları | ✅ `GameFlowTests` ile doğrulandı |
 | Ekranın tahtaya sığdırılması (6 farklı telefon ve tablet ekranı, çentikli ekran dahil) | ✅ `BoardFitTests` ile hesap düzeyinde doğrulandı |
-| Unity scriptlerinin ve testlerinin derlenmesi | ⚠️ Yalnızca topluluk referans DLL'lerine (Unity 2021.x API) karşı derlendi. Unity 6 editöründe derleme yapılmadı. |
+| Unity dosyalarının ve denemelerin hazırlanması | ✅ Windows'ta Unity 6000.0.40f1 ile doğrulandı; 74 kural denemesi geçti |
 | Prosedürel görseller | ✅ PNG'ye aktarılıp gözle kontrol edildi |
-| Görsel ve ses üretim maliyeti, doku belleği | ✅ Masaüstü .NET'te ölçüldü ([docs/PERFORMANCE.md](docs/PERFORMANCE.md)) |
-| PlayMode testleri, ekran görüntüleri, Unity performans raporu, APK | ⏳ Hazır ama henüz çalıştırılmadı (`scripts/unity.*`) |
-| `scripts/unity.ps1` | ✅ Windows'ta örnek çalıştırıcıyla 12 hata ve başarı durumu doğrulandı; Unity ile denetim ayrıca gerekli |
+| Görsel ve ses üretim maliyeti, doku belleği | ✅ Masaüstünde hem .NET hem Unity içinde ölçüldü ([docs/PERFORMANCE.md](docs/PERFORMANCE.md)) |
+| Oyunu oynatarak yapılan denemeler | ✅ Kaydırma, kazanma, kaybetme, geri alma ve 20 bölümün yüklenmesi: 5 deneme geçti |
+| Telefon boyutlarında ekran görüntüleri | ✅ 1080×1920 ve 1080×2400 boyutlarında 12 görüntü alındı ve gözden geçirildi; kazanma görüntüsü üç yıldız tamamlandıktan sonra alınır |
+| Unity hız raporu | ✅ 20 bölüm oynatıldı; 174.659 görüntü yenilemesinden ölçüm alındı |
+| Android kurulum dosyası | ✅ Unity ile 30,6 MB dosya üretildi; imzası, ARM64 ve ARMv7 içeriği doğrulandı; internet izni bulunmuyor |
+| `scripts/unity.ps1` | ✅ Windows'ta örnek çalıştırıcıyla 14 durum ve Unity ile kural, oyun, görüntü ve hız denemeleri doğrulandı |
 | Cihazda dokunmatik ve FPS testi | ❌ Yapılmadı |
 
-İlk açılışta Unity 6'ya özgü bir derleme uyarısı veya hatası çıkarsa büyük olasılıkla küçük bir API farkıdır; Console'daki mesajla birlikte bildir.
+Gerçek telefondaki dokunma, hız ve bellek sonuçları ayrıca doğrulanmalıdır. Masaüstü ölçümleri telefon sonucu sayılmaz.
 
 Gizlilik ve bağımlılık envanteri için [docs/PRIVACY_AND_DEPENDENCIES.md](docs/PRIVACY_AND_DEPENDENCIES.md) dosyasına bak.

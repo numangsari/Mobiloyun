@@ -26,7 +26,7 @@
 - **Çizim maliyeti düşük.** Sahnede en fazla yaklaşık 36 karo, 12 jöle ve 96 parçacık bulunur. Fizik motoru kullanılmıyor. Animasyonlar coroutine'ler üzerinde basit dönüşüm hesaplarından oluşuyor. Kare başına bellek ayırma yalnızca coroutine başlatırken oluşur.
 - **Çözümleyici oyunda yalnızca öğretici seviyelerde çalışır.** Bu seviyelerde 20'den az durum aranır ve süre 1 ms'nin altındadır.
 
-## Unity içinde ölçülecekler (henüz çalıştırılmadı)
+## Unity içinde ölçüm
 
 `scripts/unity.sh perf` (macOS) ya da `scripts\unity.ps1 perf` (Windows), `CaptureAndPerfTests.PerformanceReport` testini çalıştırır. Test:
 
@@ -34,4 +34,20 @@
 2. Kare sınırını kaldırıp (`targetFrameRate = -1`, vSync kapalı) 20 seviyenin optimal çözümünü animasyonlarla oynar.
 3. Kare süresinin ortalamasını, 95. yüzdeliğini ve en yüksek değerini; Mono ve toplam belleği ve doku belleğini `JellyMold/Builds/perf.json` dosyasına yazar.
 
-Bu ölçüm editörde, masaüstü donanımda yapılır. Asıl hedef olan "orta segment telefonda 60 FPS" için APK'yı cihaza yükleyip Unity Profiler ile (Development Build + Autoconnect Profiler) ölçmek gerekir.
+28 Ekim 2026 tarihinde Windows'ta Unity 6000.0.40f1 ve NVIDIA GeForce RTX 3050 Ti Laptop GPU ile ölçüldü:
+
+| Ölçü | Değer |
+|---|---|
+| Oynatılan bölüm | 20 |
+| Ölçülen görüntü yenilemesi | 174.659 |
+| Ortalama görüntü yenileme süresi | 0,39 ms |
+| Ölçümlerin %95'inin altında kaldığı süre | 0,71 ms |
+| En uzun görüntü yenileme süresi | 173,75 ms |
+| Görsel üretimi | 470,43 ms |
+| Ses üretimi | 27,90 ms |
+| Üretilen görsellerin belleği | 3,11 MB |
+| Toplam ayrılmış bellek | 88,22 MB |
+
+Ölçüm bölüm yüklemelerini de kapsar ve görüntü yenileme sınırı kapalıdır. En yüksek değer kısa bir duraklamaya işaret eder; ortalamadan telefon hızı çıkarılamaz. Bölüm değişince oyunun bekleyen işlemleri durdurulduğu için ölçüm, bölümden bağımsız olan `App` üzerinden yürütülür. Hata oluşsa da önceki hız ayarları geri yüklenir; yeterli ölçüm yoksa rapor üretilmez.
+
+Asıl hedef olan telefonda saniyede 60 görüntü için Android kurulum dosyası gerçek telefona yüklenip Unity'nin ölçüm aracıyla deneme yapılmalıdır. Bu adım henüz tamamlanmadı.

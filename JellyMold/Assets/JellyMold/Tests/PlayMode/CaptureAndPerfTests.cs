@@ -83,7 +83,7 @@ namespace JellyMold.PlayTests
                 game.Swipe(solve.Solution[0]);
                 yield return GameHarness.WaitSeconds(Timing.Move * 0.9f);
                 Save(cam, rt, Path.Combine(dir, tag + "_level07_fill.png"));
-                yield return GameHarness.WaitSeconds(Timing.WinDelay + 1.2f);
+                yield return WaitForWinStars();
                 Save(cam, rt, Path.Combine(dir, tag + "_win.png"));
 
                 game.Controller.Ui.HideOverlays();
@@ -93,6 +93,22 @@ namespace JellyMold.PlayTests
                 Object.Destroy(rt);
             }
             UnityEngine.Debug.Log("[Jelly Mold] Screenshots written to " + dir);
+        }
+
+        private IEnumerator WaitForWinStars()
+        {
+            float end = Time.realtimeSinceStartup + 10f;
+            while (Time.realtimeSinceStartup < end)
+            {
+                var stars = game.Controller.Ui.GetComponentsInChildren<UnityEngine.UI.Image>()
+                    .Where(image => image.name == "Star0" || image.name == "Star1" || image.name == "Star2").ToArray();
+                if (game.Controller.Ui.OverlayOpen && stars.Length == 3 && stars.All(image =>
+                    image.color == SpriteFactory.ToColor(ArtPalette.Star) &&
+                    (image.rectTransform.localScale - Vector3.one).sqrMagnitude < 0.0001f))
+                    yield break;
+                yield return null;
+            }
+            Assert.Fail("Kazanma görüntüsü için üç yıldızın da tamamlanması bekleniyordu.");
         }
 
         private static void Save(Camera cam, RenderTexture rt, string path)
@@ -142,19 +158,28 @@ namespace JellyMold.PlayTests
                     yield return null;
                 }
             }
-            game.Controller.StartCoroutine(Recorder());
+            // Bölüm değişiminde durdurulan oyun işlemleri ölçümü kesmemeli.
+            Coroutine recorder = game.App.StartCoroutine(Recorder());
 
-            for (int i = 0; i < game.Flow.Levels.Count; i++)
+            try
             {
-                yield return game.StartLevel(i);
-                yield return game.PlaySolution();
-                yield return GameHarness.WaitSeconds(0.3f);
+                for (int i = 0; i < game.Flow.Levels.Count; i++)
+                {
+                    yield return game.StartLevel(i);
+                    yield return game.PlaySolution();
+                    yield return GameHarness.WaitSeconds(0.3f);
+                }
             }
-            recording = false;
-            Application.targetFrameRate = previousRate;
-            QualitySettings.vSyncCount = previousVSync;
+            finally
+            {
+                recording = false;
+                game.App.StopCoroutine(recorder);
+                Application.targetFrameRate = previousRate;
+                QualitySettings.vSyncCount = previousVSync;
+            }
 
             frames.RemoveRange(0, Mathf.Min(10, frames.Count)); // warm-up frames
+            Assert.Greater(frames.Count, 100);
             frames.Sort();
             float avg = frames.Count > 0 ? frames.Average() : 0f;
             float p95 = frames.Count > 0 ? frames[(int)(frames.Count * 0.95f)] : 0f;
@@ -182,7 +207,6 @@ namespace JellyMold.PlayTests
             string path = Path.Combine(OutputDir(""), "perf.json");
             File.WriteAllText(path, json.ToString());
             UnityEngine.Debug.Log("[Jelly Mold] Performance report:\n" + json);
-            Assert.Greater(frames.Count, 100);
         }
 
         private static string F(double v) => v.ToString("0.00", CultureInfo.InvariantCulture);

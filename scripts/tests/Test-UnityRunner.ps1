@@ -26,7 +26,9 @@ public static class UnityStub
         if (scenario == "missingCounter") xml = "<test-run result=\"Passed\" failed=\"0\" />";
         if (scenario == "negativeCounter") xml = "<test-run result=\"Passed\" total=\"1\" passed=\"1\" failed=\"0\" skipped=\"-1\" inconclusive=\"0\" />";
         File.WriteAllText(args[index + 1], xml);
-        return scenario == "processFailed" ? 1 : 0;
+        if (scenario == "perfFailure" || scenario == "perfPassed")
+            File.WriteAllText(Path.Combine(Path.GetDirectoryName(args[index + 1]), "perf.json"), "{}");
+        return scenario == "processFailed" || scenario == "perfFailure" ? 1 : 0;
     }
 }
 '@
@@ -36,7 +38,7 @@ $PreviousCase = $env:JELLYMOLD_RUNNER_CASE
 $Failures = @()
 try {
     $env:UNITY_PATH = $FakeUnity
-    foreach ($case in @("passed", "processFailed", "missing", "stale", "zero", "skipped", "inconclusive", "failed", "malformed", "wrongRoot", "missingCounter", "negativeCounter")) {
+    foreach ($case in @("passed", "processFailed", "missing", "stale", "zero", "skipped", "inconclusive", "failed", "malformed", "wrongRoot", "missingCounter", "negativeCounter", "perfFailure", "perfPassed")) {
         $caseRoot = Join-Path $TestRoot ("project " + $case)
         $scripts = Join-Path $caseRoot "scripts"
         New-Item -ItemType Directory -Path $scripts -Force | Out-Null
@@ -47,8 +49,9 @@ try {
             Set-Content -LiteralPath (Join-Path $builds "test-edit.xml") -Value '<test-run result="Passed" total="1" passed="1" failed="0" skipped="0" inconclusive="0" />'
         }
         $env:JELLYMOLD_RUNNER_CASE = $case
-        $output = & "$PSHOME\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File (Join-Path $scripts "unity.ps1") test-edit 2>&1
-        $expected = if ($case -eq "passed") { 0 } else { 1 }
+        $task = if ($case.StartsWith("perf")) { "perf" } else { "test-edit" }
+        $output = & "$PSHOME\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File (Join-Path $scripts "unity.ps1") $task 2>&1
+        $expected = if ($case -eq "passed" -or $case -eq "perfPassed") { 0 } else { 1 }
         if ($LASTEXITCODE -eq $expected) {
             Write-Host "GEÇTİ: $case"
         } else {
@@ -62,4 +65,4 @@ try {
     $env:JELLYMOLD_RUNNER_CASE = $PreviousCase
 }
 if ($Failures.Count -gt 0) { throw "Başarısız durumlar: $($Failures -join ', ')" }
-Write-Host "12 durum doğrulandı."
+Write-Host "14 durum doğrulandı."
