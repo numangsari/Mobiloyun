@@ -56,6 +56,14 @@ powershell -ExecutionPolicy Bypass -File scripts\unity.ps1 all     # Windows
 
 Sonuçlar ve loglar `JellyMold/Builds/` klasörüne yazılır (git'e eklenmez).
 
+Windows çalıştırma dosyasını Unity kurmadan denetlemek için:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\tests\Test-UnityRunner.ps1
+```
+
+Bu denetim, örnek bir çalıştırıcıyla 12 durumu sınar. Unity hata verdiğinde, sonuç dosyası eksik veya bozuk olduğunda, eski sonuç kaldığında, hiç kontrol çalışmadığında veya kontroller atlandığında başarı bildirilmediğini doğrular. Dosya yollarındaki boşluklar da sınanır. Üretilen geçici dosyalar `JellyMold/Builds/RunnerTests/` altında tutulur.
+
 **Claude Code ile:** Depoyu klonla, `claude/dazzling-fermi-utir4i` dalına geç, depo klasöründe `claude` komutunu çalıştır ve "Unity planına devam et" de. Claude betikleri çalıştırır, hataları düzeltir ve ekran görüntülerini inceler.
 
 ### Unity olmadan (.NET 8 SDK)
@@ -128,7 +136,7 @@ Tasarım ilkeleri:
 
 ## Doğrulama durumu
 
-Bu demo, Unity kurulu olmayan bir bulut ortamında geliştirildi. Bu nedenle:
+İlk geliştirme Unity kurulu olmayan bir ortamda yapıldı. Aşağıdaki tablo Windows'ta yapılan ek denetimleri de içerir:
 
 | Kontrol | Durum |
 |---|---|
@@ -140,7 +148,7 @@ Bu demo, Unity kurulu olmayan bir bulut ortamında geliştirildi. Bu nedenle:
 | Prosedürel görseller | ✅ PNG'ye aktarılıp gözle kontrol edildi |
 | Görsel ve ses üretim maliyeti, doku belleği | ✅ Masaüstü .NET'te ölçüldü ([docs/PERFORMANCE.md](docs/PERFORMANCE.md)) |
 | PlayMode testleri, ekran görüntüleri, Unity performans raporu, APK | ⏳ Hazır ama henüz çalıştırılmadı (`scripts/unity.*`) |
-| `scripts/unity.ps1` | ⏳ PowerShell bu ortamda yok; betik çalıştırılmadı |
+| `scripts/unity.ps1` | ✅ Windows'ta örnek çalıştırıcıyla 12 hata ve başarı durumu doğrulandı; Unity ile denetim ayrıca gerekli |
 | Cihazda dokunmatik ve FPS testi | ❌ Yapılmadı |
 
 İlk açılışta Unity 6'ya özgü bir derleme uyarısı veya hatası çıkarsa büyük olasılıkla küçük bir API farkıdır; Console'daki mesajla birlikte bildir.

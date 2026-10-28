@@ -1,4 +1,4 @@
-# Runs Jelly Mold's Unity tasks in batch mode (Windows PowerShell 5+ / PowerShell 7).
+﻿# Runs Jelly Mold's Unity tasks in batch mode (Windows PowerShell 5+ / PowerShell 7).
 #
 #   powershell -ExecutionPolicy Bypass -File scripts\unity.ps1 setup|test-edit|test-play|screenshots|perf|apk|all
 #
@@ -36,7 +36,7 @@ function Invoke-Unity([string]$Name, [string[]]$UnityArgs) {
     Write-Host "==> $Name"
     $log = Join-Path $Out "logs\$Name.log"
     $all = @("-batchmode", "-projectPath", "`"$Project`"", "-logFile", "`"$log`"") + $UnityArgs
-    $p = Start-Process -FilePath $Unity -ArgumentList $all -Wait -PassThru -NoNewWindow
+    $p = Start-Process -FilePath $Unity -ArgumentList $all -Wait -PassThru -WindowStyle Hidden
     if ($p.ExitCode -ne 0) { Write-Host "    FAILED (exit $($p.ExitCode)) - see $log" -ForegroundColor Red; return $false }
     Write-Host "    ok"
     return $true
@@ -44,13 +44,30 @@ function Invoke-Unity([string]$Name, [string[]]$UnityArgs) {
 
 function Invoke-Tests([string]$Name, [string]$Platform, [string]$Category, [string[]]$Extra = @()) {
     $xml = Join-Path $Out "$Name.xml"
+    # Önceki çalışmanın sonucu, yeni denemenin yerine geçmemeli.
+    if (Test-Path -LiteralPath $xml) { Remove-Item -LiteralPath $xml -Force }
     $testArgs = @("-runTests", "-testPlatform", $Platform, "-testResults", "`"$xml`"") + $Extra
     if ($Category) { $testArgs += @("-testCategory", $Category) }
-    Invoke-Unity $Name $testArgs | Out-Null
+    if (-not (Invoke-Unity $Name $testArgs)) { return $false }
     if (-not (Test-Path $xml)) { Write-Host "    no results file" -ForegroundColor Red; return $false }
-    $run = ([xml](Get-Content $xml)).'test-run'
-    Write-Host "    total=$($run.total) passed=$($run.passed) failed=$($run.failed) skipped=$($run.skipped)"
-    return ($run.failed -eq "0")
+    try {
+        $run = ([xml](Get-Content -LiteralPath $xml -Raw)).DocumentElement
+        if ($run.Name -ne "test-run") { throw "Geçersiz sonuç dosyası." }
+        $counts = @{}
+        foreach ($attribute in @("total", "passed", "failed", "skipped", "inconclusive")) {
+            [long]$count = 0
+            if (-not [long]::TryParse($run.GetAttribute($attribute), [ref]$count) -or $count -lt 0) {
+                throw "Geçersiz sonuç sayısı: $attribute"
+            }
+            $counts[$attribute] = $count
+        }
+        Write-Host "    total=$($counts.total) passed=$($counts.passed) failed=$($counts.failed) skipped=$($counts.skipped) inconclusive=$($counts.inconclusive)"
+        # Atlanan veya hiç çalışmayan kontroller başarı sayılmaz.
+        return ($run.result -eq "Passed" -and $counts.total -gt 0 -and $counts.passed -eq $counts.total -and $counts.failed -eq 0 -and $counts.skipped -eq 0 -and $counts.inconclusive -eq 0)
+    } catch {
+        Write-Host "    Sonuç okunamadı: $_" -ForegroundColor Red
+        return $false
+    }
 }
 
 function Invoke-Task([string]$Name) {

@@ -1,0 +1,11 @@
+# Proje bağlamı
+
+- Jelly Mold, Unity 6 ile geliştirilen çevrimdışı bir mobil bulmaca oyunudur. Unity projesi `JellyMold/` klasöründedir; hedef sürüm `JellyMold/ProjectSettings/ProjectVersion.txt` içindedir.
+- Oyun kuralları `Scripts/Core/`, üretilen görsel ve sesler `Scripts/Procedural/`, Unity görünümü ve girişleri `Scripts/Game/` altındadır. İlk iki katman Unity dışında da çalışabilir.
+- Depodaki varsayılan çalışma dalı `claude/dazzling-fermi-utir4i` dalıdır. Çalışmadan önce güncel uzak dalı ve çalışma klasörünü doğrula.
+- Unity ile ayar, oyun denemesi, ekran görüntüsü, hız ölçümü ve Android kurulum dosyası sırası `scripts/unity.ps1 all` (Windows) veya `scripts/unity.sh all` (macOS) komutuyla yürütülür. Unity farklı bir yere kuruluysa yalnızca çalıştırılacak oturumda `UNITY_PATH` değişkeniyle program yolunu belirt.
+- Bu Windows bilgisayarında Unity yolu `C:/Users/numan/Documents/Codex/Tools/Unity/6000.0.40f1/Editor/Unity.exe`, .NET geliştirme aracı `C:/Users/numan/Documents/Codex/Tools/dotnet/dotnet.exe` yolundadır. Unity Hub veya Unity kurulum aracını masaüstü uygulamasının altından çalıştırırken `ELECTRON_RUN_AS_NODE` değişkenini yalnızca o komut oturumunda boşalt; aksi halde pencere açılmayabilir.
+- Unity dışında: `dotnet test tools/JellyMold.Core.Tests`, `dotnet run --project tools/LevelTool -c Release -- validate`, `dotnet build tools/UnityCompileCheck`. Son komut eski Unity başvuru dosyalarını kullanır; gerçek Unity 6 denetiminin yerine geçmez.
+- Windows çalıştırıcısının denetimi: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests/Test-UnityRunner.ps1`. Ek kurulum istemez; Unity yerine örnek bir program kullanır. Windows PowerShell 5.1 Türkçe metinleri doğru okusun diye Türkçe içeren `.ps1` dosyalarını UTF-8 başlangıç işaretiyle kaydet.
+- Üretilen sonuçlar, günlükler ve geçici deneme dosyaları `JellyMold/Builds/` altında kalır; Git'e eklenmez. İlk gerçek Unity açılışında oluşan `.meta`, sahne ve proje ayarı dosyaları ise gözden geçirilip depoya eklenmelidir.
+- Devam eden doğrulama: Gerçek Unity 6 içinde oyun denemeleri, iki telefon boyutunda görüntüler, hız raporu ve Android kurulum dosyası henüz doğrulanmadı. Bu adımlar ile gerçek telefonda dokunma denemesi tamamlanmadan oyunun cihazda çalıştığı söylenmemeli.
